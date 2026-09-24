@@ -5,8 +5,12 @@ on:
     branches: [main]
 
 jobs:
-  mongo-init:
+  mongo-init-and-test:
     runs-on: ubuntu-latest
+
+    env:
+      PORT: ${{ secrets.PORT }}
+      MONGO_URI: mongodb://localhost:27017/testdb
 
     services:
       mongo:
@@ -31,32 +35,11 @@ jobs:
           done
           echo "MongoDB is up"
 
-      - name: Seed MongoDB
+      - name: Install dependencies and Seed MongoDB
         working-directory: ./backend
         run: |
           npm install
           node seedTaskData.js
-
-  test:
-    needs: mongo-init
-    runs-on: ubuntu-latest
-
-    env:
-      PORT: ${{ secrets.PORT }}
-      MONGO_URI: ${{ secrets.MONGO_URI }}
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: "18"
-
-      - name: Install dependencies for backend
-        working-directory: ./backend
-        run: npm install
 
       - name: Running backend test
         working-directory: ./backend
