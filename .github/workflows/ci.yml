@@ -5,11 +5,11 @@ on:
     branches: [main]
 
 jobs:
-  build-and-test:
+  mongo-init:
     runs-on: ubuntu-latest
 
     services:
-      mongodb:
+      mongo:
         image: mongo
         ports:
           - 27017:27017
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: "18"
 
-      - name: Wait for MongoDB to be ready
+      - name: Waiting for MongoDB to be ready
         run: |
           until nc -z localhost 27017; do
             echo "Waiting for MongoDB..."
@@ -37,6 +37,23 @@ jobs:
           npm install
           node seedTaskData.js
 
-      - name: Run Backend Tests
+  test:
+    needs: mongo-init
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      - name: Install dependencies for backend
         working-directory: ./backend
-        run: npm test
+        run: npm install
+
+      - name: Running backend test
+        working-directory: ./backend
+        run: npm run test
