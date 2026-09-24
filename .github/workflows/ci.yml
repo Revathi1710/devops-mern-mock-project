@@ -41,6 +41,10 @@ jobs:
     needs: mongo-init
     runs-on: ubuntu-latest
 
+    env:
+      PORT: ${{ secrets.PORT }}
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
