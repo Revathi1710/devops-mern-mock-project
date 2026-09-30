@@ -19,5 +19,7 @@ jobs:
           script: |
             cd devops-mern-mock-project
             git pull origin main
+            mkdir -p frontend
+            touch frontend/.env.prod
             docker-compose down
             docker-compose up --build -d
